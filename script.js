@@ -1,25 +1,47 @@
-function mincost(arr) {
-    if (arr.length <= 1) return 0;
+const express = require('express');
+const bodyParser = require('body-parser');
 
-    let totalCost = 0;
+const app = express();
+app.use(bodyParser.json());
 
-    // While more than one rope remains
-    while (arr.length > 1) {
-        // Sort the array to get the two smallest ropes
-        arr.sort((a, b) => a - b);
+// Min Cost Ropes function
+function minCost(arr) {
+  if (!Array.isArray(arr) || arr.length === 0) return 0;
 
-        // Remove the two smallest ropes
-        const first = arr.shift();
-        const second = arr.shift();
+  let totalCost = 0;
 
-        const cost = first + second;
-        totalCost += cost;
+  while (arr.length > 1) {
+    // Sort the array to find the two smallest ropes
+    arr.sort((a, b) => a - b);
 
-        // Add the combined rope back to the array
-        arr.push(cost);
-    }
+    // Take out the two smallest
+    const first = arr.shift();
+    const second = arr.shift();
 
-    return totalCost;
+    const cost = first + second;
+    totalCost += cost;
+
+    // Push back the combined rope
+    arr.push(cost);
+  }
+
+  return totalCost;
 }
+
+// API Route
+app.post('/mincost', (req, res) => {
+  const { arr } = req.body;
+
+  try {
+    const result = minCost(arr);
+    res.status(200).json({ message: result });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Start Server
+const PORT = 3000;
+app.listen(PORT, () => console.log(`✅ Server running on http://localhost:${PORT}`));
 
 
